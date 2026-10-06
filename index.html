@@ -1,27 +1,187 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The RAWS Alpha v0.2</title><style>
-:root{--navy:#10243f;--gold:#b79545;--paper:#f5f2e9;--ink:#17202a;--line:#d8d2c3}*{box-sizing:border-box}body{margin:0;background:var(--paper);font-family:Arial,sans-serif;color:var(--ink)}header{background:var(--navy);color:#fff;padding:18px 5vw;border-bottom:4px solid var(--gold);position:sticky;top:0;z-index:3}.brand{font-weight:800;letter-spacing:.06em}.tag{opacity:.8;font-size:.9rem;margin-left:8px}.wrap{max-width:900px;margin:24px auto;padding:0 16px 70px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0;box-shadow:0 2px 8px #00000008}h1,h2,h3{color:var(--navy)}label{display:block;font-weight:700;margin:12px 0 6px}input,textarea,select{width:100%;padding:12px;border:1px solid #aaa;border-radius:7px;font:inherit}textarea{min-height:125px;resize:vertical}.btn{border:0;border-radius:7px;background:var(--navy);color:white;padding:12px 15px;font-weight:700;margin:6px 6px 0 0}.gold{background:var(--gold);color:#111}.outline{background:#fff;color:var(--navy);border:1px solid var(--navy)}.muted{color:#66717d}.hidden{display:none}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.source{border-left:4px solid var(--gold);padding:9px 12px;background:#faf9f5;margin:8px 0}.locked{border-left:5px solid var(--gold)}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#ece8dd;font-size:.78rem;font-weight:700}.analysis{white-space:pre-wrap;line-height:1.5;background:#f8f8f6;padding:14px;border-radius:8px}.count{text-align:right;font-size:.8rem;color:#68717b;margin-top:4px}@media(max-width:650px){.grid{grid-template-columns:1fr}.tag{display:block;margin:3px 0 0}}
-</style></head><body><header><span class="brand">THE RAWS</span><span class="tag">Read. Assess. Write. Source.</span></header><main class="wrap">
-<section id="start" class="card"><h1>Adaptive Workspace</h1><p>Alpha v0.2 — browser prototype. Data stays in this browser on this device.</p><label>TOPIC — What are you assessing?</label><textarea id="topic" placeholder="Enter a question, issue, hypothesis, or event..."></textarea><button class="btn gold" onclick="createWorkspace()">Create Workspace</button><button class="btn outline" onclick="loadWorkspace()">Open Saved Workspace</button></section>
-<section id="workspace" class="hidden"><div class="card"><span class="pill">TOPIC</span><h2 id="topicView"></h2><div class="muted" id="created"></div></div>
-<div class="card"><h2>Supporting Information</h2><div class="grid"><div><h3>PSI — Public</h3><div id="psi"></div></div><div><h3>ISI — Internal</h3><div id="isi"></div></div></div><label>Lane</label><select id="lane"><option>PSI</option><option>ISI</option></select><label>Source / title</label><input id="sourceTitle"><label>URL / document reference</label><input id="locator"><label>What does this support?</label><textarea id="notes"></textarea><button class="btn" onclick="addSource()">Add Supporting Information</button></div>
-<div class="card"><h2>Initial Assessment</h2><p class="muted">Write first. Maximum 500 words. RAWS does not write your initial conclusion for you.</p><textarea id="assessment" oninput="wordCount()"></textarea><div class="count" id="wc">0 / 500 words</div><button class="btn gold" id="lockBtn" onclick="lockAssessment()">Lock Initial Assessment</button></div>
-<div id="lockedCard" class="card locked hidden"><h2>Locked Assessment</h2><div id="lockedText"></div><p class="muted" id="lockMeta"></p><button class="btn" onclick="analyze()">Help Me Test My Thinking</button></div>
-<div id="analysisCard" class="card hidden"><h2>RAWS Analysis</h2><p class="muted">Evidence | Independence | Causality | Assumptions | Contradictions</p><div class="analysis" id="analysis"></div><button class="btn gold" onclick="retain()">Retain Original</button><button class="btn" onclick="revise()">Revise Assessment</button></div>
-<div id="publishCard" class="card hidden"><h2>Publish</h2><label>Type</label><select id="kind" onchange="toggleProspective()"><option>MicroPerspective</option><option>MicroProspective</option></select><label>Published text (≤500 words)</label><textarea id="pubBody"></textarea><div id="prospective" class="hidden"><label>IF — defined trigger/condition</label><input id="condition"><label>THEN — measurable predicted outcome</label><input id="outcome"><label>BY — resolution date</label><input type="date" id="deadline"><label>Authoritative resolution source</label><input id="resolution"></div><button class="btn gold" onclick="publishItem()">Save Publication</button><div id="publicationResult"></div></div>
-<button class="btn outline" onclick="resetAll()">Reset Prototype</button></section></main><script>
-const KEY='raws-alpha-v02'; let state={}; const $=id=>document.getElementById(id); const words=s=>(s.trim().match(/\S+/g)||[]).length; function save(){localStorage.setItem(KEY,JSON.stringify(state))} function stamp(){return new Date().toLocaleString()} function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function createWorkspace(){let t=$('topic').value.trim();if(!t)return alert('Enter a topic first.');state={topic:t,created:stamp(),sources:[],locked:null,revisions:[],publications:[]};save();render()}
-function loadWorkspace(){let x=localStorage.getItem(KEY);if(!x)return alert('No saved RAWS workspace exists in this browser yet.');state=JSON.parse(x);render()}
-function render(){ $('start').classList.add('hidden');$('workspace').classList.remove('hidden');$('topicView').textContent=state.topic;$('created').textContent='Created '+state.created;renderSources();if(state.locked){$('assessment').value=state.draft||'';$('assessment').disabled=true;$('lockBtn').disabled=true;$('lockedCard').classList.remove('hidden');$('lockedText').textContent=state.locked.body;$('lockMeta').textContent='Locked '+state.locked.at+' • immutable original preserved';$('publishCard').classList.remove('hidden')} if(state.analysis){$('analysisCard').classList.remove('hidden');$('analysis').textContent=state.analysis}renderPubs();wordCount()}
-function addSource(){let title=$('sourceTitle').value.trim();if(!title)return alert('Enter a source title.');state.sources.push({lane:$('lane').value,title,locator:$('locator').value.trim(),notes:$('notes').value.trim(),at:stamp()});save();$('sourceTitle').value=$('locator').value=$('notes').value='';renderSources()}
-function renderSources(){['PSI','ISI'].forEach(l=>{$(l.toLowerCase()).innerHTML=(state.sources||[]).filter(s=>s.lane===l).map(s=>`<div class="source"><b>${esc(s.title)}</b><br><span class="muted">${esc(s.locator||'No locator')}</span>${s.notes?`<div>${esc(s.notes)}</div>`:''}</div>`).join('')||'<p class="muted">None added.</p>'})}
-function wordCount(){let n=words($('assessment').value);$('wc').textContent=n+' / 500 words';$('wc').style.fontWeight=n>500?'700':'400'}
-function lockAssessment(){let b=$('assessment').value.trim(),n=words(b);if(!b)return alert('Write your assessment first.');if(n>500)return alert('Assessment exceeds 500 words.');if(!confirm('Lock this as your immutable original assessment? Revisions will create new versions rather than overwrite it.'))return;state.draft=b;state.locked={body:b,at:stamp()};save();render()}
-function analyze(){let t=state.locked.body.toLowerCase(), causal=['because','therefore','causes','leads to','result','due to'].reduce((n,x)=>n+(t.split(x).length-1),0), uncertainty=['may','might','likely','unlikely','uncertain','confidence','estimate'].reduce((n,x)=>n+(t.split(x).length-1),0), src=(state.sources||[]).length;state.analysis=`EVIDENCE SUPPORT\n• ${src} supporting-information record(s) supplied. The production engine will map material claims to evidence and flag unsupported claims.\n\nSOURCE INDEPENDENCE / PROVENANCE\n• PSI and ISI are preserved separately. Repeated reporting must not be counted as independent corroboration when it traces to the same origin.\n\nCAUSAL REASONING\n• ${causal} explicit causal-language signal(s) detected. Consequential causal steps should be decomposed and independently tested.\n\nASSUMPTIONS & UNCERTAINTY\n• ${uncertainty} uncertainty-language signal(s) detected. Hidden assumptions should be surfaced without changing the analyst's conclusion.\n\nCONTRADICTIONS\n• RAWS should actively seek credible evidence that cuts against the assessment, not merely evidence that supports it.\n\nANALYST CONTROL\n• Advisory only. The analyst retains or revises the conclusion; the locked original remains preserved.`;save();render()}
-function retain(){state.decision='retained';state.decisionAt=stamp();save();alert('Original assessment retained. The locked record remains unchanged.')}
-function revise(){let r=prompt('Enter the revised assessment. The original will remain preserved.',state.locked.body);if(r===null)return;if(words(r)>500)return alert('Revision exceeds 500 words.');state.revisions.push({version:state.revisions.length+2,body:r,at:stamp()});state.draft=r;save();alert('Revision saved as a new version. Original remains preserved.')}
-function toggleProspective(){$('prospective').classList.toggle('hidden',$('kind').value!=='MicroProspective')}
-function publishItem(){let body=$('pubBody').value.trim();if(!body)return alert('Enter publication text.');if(words(body)>500)return alert('Publication exceeds 500 words.');let p={kind:$('kind').value,body,at:stamp()};if(p.kind==='MicroProspective'){p.condition=$('condition').value.trim();p.outcome=$('outcome').value.trim();p.deadline=$('deadline').value;p.resolution=$('resolution').value.trim();if(!p.condition||!p.outcome||!p.deadline||!p.resolution)return alert('A MicroProspective requires IF, THEN, BY, and a resolution source.')}state.publications.push(p);save();renderPubs();alert('Publication saved in this browser prototype.')}
-function renderPubs(){if(!$('publicationResult'))return;$('publicationResult').innerHTML=(state.publications||[]).map(p=>`<div class="source"><b>${esc(p.kind)}</b><div>${esc(p.body)}</div>${p.kind==='MicroProspective'?`<small>IF ${esc(p.condition)} → THEN ${esc(p.outcome)} → BY ${esc(p.deadline)}<br>Resolution: ${esc(p.resolution)}</small>`:''}</div>`).join('')}
-function resetAll(){if(confirm('Delete the RAWS prototype data saved in this browser?')){localStorage.removeItem(KEY);location.reload()}}
-</script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The RAWS v3</title>
+
+<style>
+:root{
+ --navy:#0b1f3a;
+ --gold:#c5a253;
+ --bg:#f5f6f8;
+ --card:#fff;
+ --ink:#17202a;
+ --muted:#697386;
+ --line:#d9dee7
+}
+
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:var(--bg);
+ color:var(--ink)
+}
+
+header{
+ background:var(--navy);
+ color:white;
+ padding:22px 18px
+}
+
+header h1{margin:0;font-size:26px}
+header p{margin:5px 0 0;color:#d9e0eb}
+
+.wrap{max-width:900px;margin:auto;padding:18px}
+
+.card{
+ background:var(--card);
+ border:1px solid var(--line);
+ border-radius:12px;
+ padding:18px;
+ margin:14px 0;
+ box-shadow:0 2px 8px #0000000a
+}
+
+h2{font-size:18px;margin:0 0 12px}
+.small{font-size:13px;color:var(--muted)}
+
+input,textarea,select{
+ width:100%;
+ padding:12px;
+ border:1px solid #bcc5d1;
+ border-radius:8px;
+ font:inherit;
+ margin:6px 0 10px
+}
+
+textarea{min-height:120px;resize:vertical}
+.assessment{min-height:230px}
+.forecast{min-height:150px}
+
+button{
+ border:0;
+ border-radius:8px;
+ padding:11px 14px;
+ font-weight:700;
+ cursor:pointer;
+ margin:4px 6px 4px 0
+}
+
+.primary{background:var(--navy);color:#fff}
+.secondary{background:#eef1f5;color:var(--ink)}
+.gold{background:var(--gold);color:#111}
+.hidden{display:none}
+
+.item{
+ border-top:1px solid var(--line);
+ padding:10px 0;
+ display:flex;
+ gap:10px
+}
+
+.num{font-weight:700;min-width:22px}
+
+.tag{
+ display:inline-block;
+ background:#eef1f5;
+ border-radius:999px;
+ padding:5px 9px;
+ font-size:12px;
+ margin:3px
+}
+
+.feedback{
+ background:#fbfaf5;
+ border-left:4px solid var(--gold);
+ padding:14px;
+ margin-top:10px
+}
+
+.profiles{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+ gap:8px
+}
+
+.profile{
+ border:1px solid var(--line);
+ background:#fff;
+ text-align:left
+}
+
+.profile.selected{outline:3px solid var(--gold)}
+
+.row{
+ display:flex;
+ gap:8px;
+ align-items:center;
+ flex-wrap:wrap
+}
+
+.row input[type=file]{width:auto;max-width:100%}
+.count{font-size:13px;color:var(--muted);float:right}
+
+@media(max-width:600px){
+ .wrap{padding:10px}
+ .card{padding:14px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>THE RAWS</h1>
+<p>Read. Assess. Write. Source.</p>
+</header>
+
+<main class="wrap">
+
+<section class="card" id="start">
+<h2>Choose Your Workspace — V3</h2>
+
+<p class="small">
+<b>Workspace class:</b>
+Professional • Higher Education • Student (13–17)
+</p>
+
+<p class="small">
+Choose the workspace that best fits what you do.
+This changes the analytical coaching, not your conclusions.
+</p>
+
+<div class="profiles" id="profiles"></div>
+
+<button class="primary" onclick="createWorkspace()">
+Create Your Workspace
+</button>
+</section>
+
+
+<div id="workspace" class="hidden">
+
+<section class="card">
+<h2>
+Workspace
+<span id="profileTag" class="tag"></span>
+</h2>
+
+<label><b>Topic / Issue</b></label>
+
+<input
+ id="topic"
+ placeholder="Enter the topic or issue you are assessing">
+</section>
+
+
+<section class="card">
+
+<h2>
+Public Supporting Information
+<span class="count" id="publicCount">0 items</span>
+</h2>
+
+<label><b>Source / URL</b></

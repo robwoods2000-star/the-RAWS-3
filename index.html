@@ -1,10 +1,10 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1f3a">
 <title>The RAWS v3</title>
-
 <style>
 :root{
  --navy:#0b1f3a;
@@ -15,173 +15,567 @@
  --muted:#697386;
  --line:#d9dee7
 }
-
 *{box-sizing:border-box}
-
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:var(--bg);
- color:var(--ink)
-}
-
-header{
- background:var(--navy);
- color:white;
- padding:22px 18px
-}
-
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--navy);color:white;padding:22px 18px}
 header h1{margin:0;font-size:26px}
 header p{margin:5px 0 0;color:#d9e0eb}
-
 .wrap{max-width:900px;margin:auto;padding:18px}
-
-.card{
- background:var(--card);
- border:1px solid var(--line);
- border-radius:12px;
- padding:18px;
- margin:14px 0;
- box-shadow:0 2px 8px #0000000a
-}
-
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:14px 0;box-shadow:0 2px 8px #0000000a}
 h2{font-size:18px;margin:0 0 12px}
+h3{font-size:16px;margin:18px 0 8px}
 .small{font-size:13px;color:var(--muted)}
-
-input,textarea,select{
- width:100%;
- padding:12px;
- border:1px solid #bcc5d1;
- border-radius:8px;
- font:inherit;
- margin:6px 0 10px
-}
-
+label{display:block;margin:8px 0 4px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #bcc5d1;border-radius:8px;font:inherit;margin:6px 0 10px}
 textarea{min-height:120px;resize:vertical}
-.assessment{min-height:230px}
-.forecast{min-height:150px}
-
-button{
- border:0;
- border-radius:8px;
- padding:11px 14px;
- font-weight:700;
- cursor:pointer;
- margin:4px 6px 4px 0
-}
-
+textarea.assessment{min-height:230px}
+textarea.forecast{min-height:150px}
+button{border:0;border-radius:8px;padding:11px 14px;font-weight:700;cursor:pointer;margin:4px 6px 4px 0}
+button:disabled{opacity:.55;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #c5a253;outline-offset:2px}
 .primary{background:var(--navy);color:#fff}
 .secondary{background:#eef1f5;color:var(--ink)}
 .gold{background:var(--gold);color:#111}
-.hidden{display:none}
-
-.item{
- border-top:1px solid var(--line);
- padding:10px 0;
- display:flex;
- gap:10px
-}
-
+.hidden{display:none!important}
+.item{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:10px;align-items:flex-start}
 .num{font-weight:700;min-width:22px}
-
-.tag{
- display:inline-block;
- background:#eef1f5;
- border-radius:999px;
- padding:5px 9px;
- font-size:12px;
- margin:3px
-}
-
-.feedback{
- background:#fbfaf5;
- border-left:4px solid var(--gold);
- padding:14px;
- margin-top:10px
-}
-
-.profiles{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
- gap:8px
-}
-
-.profile{
- border:1px solid var(--line);
- background:#fff;
- text-align:left
-}
-
+.tag{display:inline-block;background:#eef1f5;border-radius:999px;padding:5px 9px;font-size:12px;margin:3px}
+.feedback{background:#fbfaf5;border-left:4px solid var(--gold);padding:14px;margin-top:10px}
+.profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.profile{border:1px solid var(--line);background:#fff;text-align:left;width:100%;min-height:74px}
 .profile.selected{outline:3px solid var(--gold)}
-
-.row{
- display:flex;
- gap:8px;
- align-items:center;
- flex-wrap:wrap
-}
-
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .row input[type=file]{width:auto;max-width:100%}
 .count{font-size:13px;color:var(--muted);float:right}
-
-@media(max-width:600px){
- .wrap{padding:10px}
- .card{padding:14px}
-}
+.source{border-top:1px solid var(--line);padding:12px 0;overflow-wrap:anywhere}
+.source-title{font-weight:700}
+.source-notes{white-space:pre-wrap;margin:4px 0}
+.section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.status{min-height:1.5em;color:var(--muted);font-size:13px}
+.version{border-top:1px solid var(--line);padding:12px 0}
+.danger{color:#8a2525}
+.nowrap{white-space:nowrap}
+@media(max-width:600px){.wrap{padding:10px}.card{padding:14px}.section-heading{align-items:flex-start;flex-direction:column;gap:0}}
 </style>
 </head>
-
 <body>
-
 <header>
 <h1>THE RAWS</h1>
 <p>Read. Assess. Write. Source.</p>
 </header>
-
 <main class="wrap">
-
 <section class="card" id="start">
 <h2>Choose Your Workspace — V3</h2>
-
-<p class="small">
-<b>Workspace class:</b>
-Professional • Higher Education • Student (13–17)
-</p>
-
-<p class="small">
-Choose the workspace that best fits what you do.
-This changes the analytical coaching, not your conclusions.
-</p>
-
-<div class="profiles" id="profiles"></div>
-
-<button class="primary" onclick="createWorkspace()">
-Create Your Workspace
-</button>
+<p class="small"><b>Workspace class:</b> Professional • Higher Education • Student (13–17)</p>
+<p class="small">Choose the workspace that best fits what you do. This changes the analytical coaching, not your conclusions.</p>
+<div class="profiles" id="profiles" role="group" aria-label="Workspace class"></div>
+<button class="primary" id="createButton" type="button">Create Your Workspace</button>
+<button class="secondary" id="loadButton" type="button">Open Saved Workspace</button>
+<label class="secondary" for="importFile" style="display:inline-block;padding:11px 14px;border-radius:8px;font-weight:700;cursor:pointer">Import Workspace</label>
+<input id="importFile" type="file" accept="application/json,.json" class="hidden">
+<p class="status" id="startStatus" role="status" aria-live="polite"></p>
 </section>
-
 
 <div id="workspace" class="hidden">
-
 <section class="card">
-<h2>
-Workspace
-<span id="profileTag" class="tag"></span>
-</h2>
-
-<label><b>Topic / Issue</b></label>
-
-<input
- id="topic"
- placeholder="Enter the topic or issue you are assessing">
+<div class="section-heading"><h2>Workspace <span id="profileTag" class="tag"></span></h2><span class="small" id="created"></span></div>
+<label for="topic"><b>Topic / Issue</b></label>
+<input id="topic" placeholder="Enter the topic or issue you are assessing">
 </section>
 
+<section class="card">
+<div class="section-heading"><h2>Public Supporting Information</h2><span class="count" id="publicCount">0 items</span></div>
+<p class="small">Record the source, what it supports, and whether it challenges your current view. Public and internal material are kept in separate lanes.</p>
+<div id="publicSources"></div>
+<h3>Add Supporting Information</h3>
+<label for="lane">Information lane</label>
+<select id="lane"><option value="Public">Public</option><option value="Internal">Internal</option></select>
+<label for="sourceTitle">Source / title</label>
+<input id="sourceTitle" placeholder="Report, article, interview, dataset…">
+<label for="locator">Source URL / document reference</label>
+<input id="locator" type="text" placeholder="https://… or internal reference">
+<label for="notes">What does this support or challenge?</label>
+<textarea id="notes" placeholder="Summarize the relevant evidence and its limitations."></textarea>
+<button class="primary" id="addSourceButton" type="button">Add Source</button>
+<div class="section-heading"><h3>Internal Supporting Information</h3><span class="count" id="internalCount">0 items</span></div>
+<div id="internalSources"></div>
+</section>
 
 <section class="card">
+<div class="section-heading"><h2>Initial Assessment</h2><span class="count" id="wordCount">0 / 500 words</span></div>
+<p class="small">Write first. Your initial assessment is preserved when locked; RAWS coaching does not decide your conclusion.</p>
+<label for="assessment">Your assessment</label>
+<textarea id="assessment" class="assessment" placeholder="State your assessment, reasoning, confidence, and important uncertainties." maxlength="10000"></textarea>
+<button class="gold" id="lockButton" type="button">Lock Initial Assessment</button>
+<p class="status" id="assessmentStatus" role="status" aria-live="polite"></p>
+</section>
 
-<h2>
-Public Supporting Information
-<span class="count" id="publicCount">0 items</span>
-</h2>
+<section class="card hidden" id="lockedCard">
+<h2>Locked Initial Assessment</h2>
+<div class="feedback" id="lockedText"></div>
+<p class="small" id="lockMeta"></p>
+<button class="primary" id="analyzeButton" type="button">Help Me Test My Thinking</button>
+</section>
 
-<label><b>Source / URL</b></
+<section class="card hidden" id="analysisCard">
+<h2>RAWS Analytical Coaching</h2>
+<p class="small">Prompts to support your own assessment—not an automated fact-check or substitute for judgment.</p>
+<div id="analysis"></div>
+<button class="gold" id="retainButton" type="button">Retain Original Assessment</button>
+<button class="secondary" id="reviseButton" type="button">Add a Revised Assessment</button>
+<p class="status" id="decisionStatus" role="status" aria-live="polite"></p>
+</section>
+
+<section class="card hidden" id="revisionCard">
+<h2>New Assessment Version</h2>
+<p class="small">The locked original and earlier versions remain unchanged.</p>
+<label for="revisionText">Revised assessment (maximum 500 words)</label>
+<textarea id="revisionText" class="assessment"></textarea>
+<span class="count" id="revisionWordCount">0 / 500 words</span>
+<button class="primary" id="saveRevisionButton" type="button">Save New Version</button>
+</section>
+
+<section class="card hidden" id="publishCard">
+<h2>Write and Publish</h2>
+<label for="kind">Publication type</label>
+<select id="kind"><option value="MicroPerspective">MicroPerspective</option><option value="MicroProspective">MicroProspective</option></select>
+<label for="pubBody">Published text (maximum 500 words)</label>
+<textarea id="pubBody" placeholder="Write the perspective or prospective statement you want to preserve."></textarea>
+<span class="count" id="publicationWordCount">0 / 500 words</span>
+<div id="prospective" class="hidden">
+<p class="small">A MicroProspective states a condition, a measurable outcome, a deadline, and how the outcome will be resolved.</p>
+<label for="condition">IF — defined trigger / condition</label><input id="condition">
+<label for="outcome">THEN — measurable predicted outcome</label><input id="outcome">
+<label for="deadline">BY — resolution date</label><input id="deadline" type="date">
+<label for="resolution">Authoritative resolution source</label><input id="resolution">
+</div>
+<button class="gold" id="publishButton" type="button">Save Publication</button>
+<div id="publicationResult"></div>
+</section>
+
+<section class="card">
+<h2>Workspace Data</h2>
+<p class="small">Your workspace is stored in this browser on this device. Export a JSON backup to move it elsewhere. Sources and assessments are not sent to a server.</p>
+<button class="secondary" id="exportButton" type="button">Export Workspace</button>
+<label for="workspaceImport" style="display:inline-block">Import workspace JSON</label>
+<input id="workspaceImport" type="file" accept="application/json,.json">
+<button class="secondary" id="resetButton" type="button">Delete Saved Workspace</button>
+<button class="secondary" id="closeButton" type="button">Close Workspace</button>
+<p class="status" id="dataStatus" role="status" aria-live="polite"></p>
+</section>
+</div>
+</main>
+<script>
+'use strict';
+
+const STORAGE_KEY = 'raws-v3-workspace';
+const profiles = [
+  { id: 'professional', name: 'Professional', detail: 'Applied analysis and decision support' },
+  { id: 'higher-education', name: 'Higher Education', detail: 'Research, evidence, and argument' },
+  { id: 'student', name: 'Student (13–17)', detail: 'Clear, age-appropriate critical thinking' }
+];
+const $ = id => document.getElementById(id);
+const wordCount = text => (String(text || '').trim().match(/\S+/g) || []).length;
+const escapeHTML = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[char]));
+let selectedProfile = profiles[0].id;
+let state = null;
+
+function setStatus(id, message) {
+  $(id).textContent = message;
+}
+
+function saveWorkspace() {
+  if (!state) return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    setStatus('dataStatus', 'Could not save in this browser. Export a backup before closing.');
+  }
+}
+
+function renderProfiles() {
+  $('profiles').innerHTML = profiles.map(profile => `
+    <button class="profile${profile.id === selectedProfile ? ' selected' : ''}" type="button"
+      data-profile="${profile.id}" aria-pressed="${profile.id === selectedProfile}">
+      <b>${escapeHTML(profile.name)}</b><br><span class="small">${escapeHTML(profile.detail)}</span>
+    </button>`).join('');
+  $('profiles').querySelectorAll('[data-profile]').forEach(button => {
+    button.addEventListener('click', () => {
+      selectedProfile = button.dataset.profile;
+      renderProfiles();
+    });
+  });
+}
+
+function emptyWorkspace(profileId, topic) {
+  return {
+    version: 3,
+    profile: profileId,
+    topic: topic || '',
+    created: new Date().toISOString(),
+    sources: [],
+    assessment: '',
+    locked: null,
+    analysis: null,
+    decision: null,
+    revisions: [],
+    publications: []
+  };
+}
+
+function createWorkspace() {
+  state = emptyWorkspace(selectedProfile, '');
+  saveWorkspace();
+  renderWorkspace();
+}
+
+function validateWorkspace(data) {
+  return data && typeof data === 'object' && !Array.isArray(data) &&
+    typeof data.topic === 'string' && profiles.some(profile => profile.id === data.profile) &&
+    Array.isArray(data.sources) && Array.isArray(data.revisions) &&
+    Array.isArray(data.publications) &&
+    data.sources.every(source => source && typeof source === 'object' &&
+      ['Public', 'Internal'].includes(source.lane) && typeof source.title === 'string' &&
+      ['locator', 'notes', 'at'].every(key => source[key] == null || typeof source[key] === 'string')) &&
+    data.revisions.every(revision => revision && typeof revision === 'object' &&
+      typeof revision.body === 'string') &&
+    data.publications.every(publication => publication && typeof publication === 'object' &&
+      ['MicroPerspective', 'MicroProspective'].includes(publication.kind) &&
+      typeof publication.body === 'string') &&
+    (!data.assessment || typeof data.assessment === 'string') &&
+    (!data.locked || (typeof data.locked.body === 'string' && typeof data.locked.at === 'string'));
+}
+
+function loadWorkspace() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      setStatus('startStatus', 'No saved workspace was found in this browser.');
+      return;
+    }
+    const loaded = JSON.parse(saved);
+    if (!validateWorkspace(loaded)) throw new Error('Invalid workspace');
+    state = normalizeWorkspace(loaded);
+    renderWorkspace();
+  } catch (error) {
+    setStatus('startStatus', 'The saved workspace could not be opened. Import a valid JSON backup or delete the damaged saved data.');
+  }
+}
+
+function normalizeWorkspace(data) {
+  return {
+    ...emptyWorkspace(data.profile, data.topic),
+    ...data,
+    sources: data.sources || [],
+    revisions: data.revisions || [],
+    publications: data.publications || []
+  };
+}
+
+function renderWorkspace() {
+  $('start').classList.add('hidden');
+  $('workspace').classList.remove('hidden');
+  $('profileTag').textContent = (profiles.find(profile => profile.id === state.profile) || profiles[0]).name;
+  $('created').textContent = `Created ${new Date(state.created).toLocaleString()}`;
+  $('topic').value = state.topic || '';
+  $('assessment').value = state.assessment || '';
+  $('assessment').disabled = Boolean(state.locked);
+  $('lockButton').disabled = Boolean(state.locked);
+  $('lockedCard').classList.toggle('hidden', !state.locked);
+  $('analysisCard').classList.toggle('hidden', !state.analysis);
+  $('revisionCard').classList.add('hidden');
+  $('publishCard').classList.toggle('hidden', !state.locked);
+  if (state.locked) {
+    $('lockedText').textContent = state.locked.body;
+    $('lockMeta').textContent = `Locked ${new Date(state.locked.at).toLocaleString()} • original preserved`;
+  }
+  if (state.analysis) renderAnalysis();
+  renderSources();
+  renderRevisions();
+  renderPublications();
+  updateCounts();
+}
+
+function updateCounts() {
+  const publicCount = state.sources.filter(source => source.lane === 'Public').length;
+  const internalCount = state.sources.filter(source => source.lane === 'Internal').length;
+  $('publicCount').textContent = `${publicCount} ${publicCount === 1 ? 'item' : 'items'}`;
+  $('internalCount').textContent = `${internalCount} ${internalCount === 1 ? 'item' : 'items'}`;
+  $('wordCount').textContent = `${wordCount($('assessment').value)} / 500 words`;
+  $('revisionWordCount').textContent = `${wordCount($('revisionText').value)} / 500 words`;
+  $('publicationWordCount').textContent = `${wordCount($('pubBody').value)} / 500 words`;
+}
+
+function renderSources() {
+  ['Public', 'Internal'].forEach(lane => {
+    const sources = state.sources.filter(source => source.lane === lane);
+    const target = lane === 'Public' ? $('publicSources') : $('internalSources');
+    target.innerHTML = sources.length ? sources.map(source => {
+      const index = state.sources.indexOf(source);
+      let locator = 'No URL or reference provided';
+      if (source.locator) {
+        let link = '';
+        try {
+          const url = new URL(source.locator);
+          if (['http:', 'https:'].includes(url.protocol)) {
+            link = `<a href="${escapeHTML(url.href)}" target="_blank" rel="noopener noreferrer">${escapeHTML(source.locator)}</a>`;
+          }
+        } catch (error) {
+          link = '';
+        }
+        locator = link || escapeHTML(source.locator);
+      }
+      return `<div class="source"><div class="source-title">${escapeHTML(source.title)}</div>
+        <div>${locator}</div>${source.notes ? `<div class="source-notes">${escapeHTML(source.notes)}</div>` : ''}
+        <span class="small">${escapeHTML(source.at || '')}</span>
+        <button class="secondary" type="button" data-remove-source="${index}" aria-label="Remove ${escapeHTML(source.title)}">Remove</button></div>`;
+    }).join('') : '<p class="small">No sources added.</p>';
+  });
+  document.querySelectorAll('[data-remove-source]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.sources.splice(Number(button.dataset.removeSource), 1);
+      saveWorkspace();
+      renderSources();
+      updateCounts();
+    });
+  });
+}
+
+function addSource() {
+  const title = $('sourceTitle').value.trim();
+  const locator = $('locator').value.trim();
+  if (!title) {
+    setStatus('dataStatus', 'Enter a source title before adding it.');
+    $('sourceTitle').focus();
+    return;
+  }
+  if (locator) {
+    try {
+      const url = new URL(locator);
+      if (!['http:', 'https:'].includes(url.protocol)) throw new Error('Unsupported URL scheme');
+    } catch (error) {
+      if (!/^[\w .:/#()-]+$/.test(locator)) {
+        setStatus('dataStatus', 'Enter a valid http(s) URL or a plain document reference.');
+        $('locator').focus();
+        return;
+      }
+    }
+  }
+  state.sources.push({
+    lane: $('lane').value,
+    title,
+    locator,
+    notes: $('notes').value.trim(),
+    at: new Date().toLocaleString()
+  });
+  $('sourceTitle').value = '';
+  $('locator').value = '';
+  $('notes').value = '';
+  saveWorkspace();
+  renderSources();
+  updateCounts();
+  setStatus('dataStatus', 'Supporting information added.');
+}
+
+function lockAssessment() {
+  const body = $('assessment').value.trim();
+  const count = wordCount(body);
+  if (!body) {
+    setStatus('assessmentStatus', 'Write your initial assessment before locking it.');
+    $('assessment').focus();
+    return;
+  }
+  if (count > 500) {
+    setStatus('assessmentStatus', `Your assessment is ${count} words. Reduce it to 500 words or fewer.`);
+    return;
+  }
+  if (!window.confirm('Lock this as your original assessment? You can add new versions later, but this original will remain unchanged.')) return;
+  state.assessment = body;
+  state.locked = { body, at: new Date().toISOString() };
+  saveWorkspace();
+  renderWorkspace();
+  setStatus('assessmentStatus', 'Initial assessment locked and preserved.');
+}
+
+function renderAnalysis() {
+  const text = state.locked.body;
+  const sourceCount = state.sources.length;
+  const independentSources = new Set(state.sources.map(source => source.title.toLowerCase())).size;
+  const publicCount = state.sources.filter(source => source.lane === 'Public').length;
+  const internalCount = sourceCount - publicCount;
+  const prompts = [
+    ['Evidence and claims', sourceCount
+      ? `You recorded ${sourceCount} supporting-information item(s), across ${publicCount} public and ${internalCount} internal. Which specific claims does each item support, and what evidence would weaken them?`
+      : 'No supporting information has been recorded yet. Which key claims need evidence, including evidence that could challenge your view?'],
+    ['Provenance and independence', sourceCount
+      ? `${independentSources} distinct source title(s) are recorded. Check whether apparently separate reports rely on the same original source, data, or interview.`
+      : 'Before relying on corroboration, identify the original source and whether additional accounts are genuinely independent.'],
+    ['Causality and assumptions', 'Separate observed facts from explanations. What assumptions connect the evidence to your conclusion, and what other causes could explain the same observations?'],
+    ['Uncertainty and counterevidence', 'State what is uncertain and how confident you are. Actively look for credible contradictory evidence and define what would change your assessment.'],
+    ['Analyst control', 'These are review prompts, not a fact-check or recommendation. You retain control of your assessment; your locked original remains unchanged.']
+  ];
+  $('analysis').innerHTML = prompts.map(([heading, prompt]) =>
+    `<div class="feedback"><b>${escapeHTML(heading)}</b><br>${escapeHTML(prompt)}</div>`).join('');
+  state.analysis = { generatedAt: new Date().toISOString(), wordCount: wordCount(text) };
+  saveWorkspace();
+}
+
+function retainAssessment() {
+  state.decision = { type: 'retained', at: new Date().toISOString() };
+  saveWorkspace();
+  setStatus('decisionStatus', 'Original assessment retained. The locked record remains unchanged.');
+}
+
+function showRevision() {
+  $('revisionCard').classList.remove('hidden');
+  $('revisionText').value = state.revisions.length
+    ? state.revisions[state.revisions.length - 1].body
+    : state.locked.body;
+  updateCounts();
+  $('revisionText').focus();
+}
+
+function saveRevision() {
+  const body = $('revisionText').value.trim();
+  const count = wordCount(body);
+  if (!body || count > 500) {
+    setStatus('decisionStatus', body ? 'A revised assessment must be 500 words or fewer.' : 'Enter a revised assessment first.');
+    return;
+  }
+  state.revisions.push({ version: state.revisions.length + 2, body, at: new Date().toISOString() });
+  state.decision = { type: 'revised', at: new Date().toISOString() };
+  saveWorkspace();
+  renderRevisions();
+  $('revisionCard').classList.add('hidden');
+  setStatus('decisionStatus', 'New assessment version saved; the original is unchanged.');
+}
+
+function renderRevisions() {
+  let target = $('revisionList');
+  if (!target) {
+    target = document.createElement('div');
+    target.id = 'revisionList';
+    $('analysisCard').appendChild(target);
+  }
+  target.innerHTML = state.revisions.map(revision =>
+    `<div class="version"><b>Version ${Number(revision.version) || 2}</b> <span class="small">${escapeHTML(revision.at || '')}</span><p class="source-notes">${escapeHTML(revision.body)}</p></div>`
+  ).join('');
+}
+
+function toggleProspective() {
+  $('prospective').classList.toggle('hidden', $('kind').value !== 'MicroProspective');
+}
+
+function savePublication() {
+  const body = $('pubBody').value.trim();
+  if (!body || wordCount(body) > 500) {
+    setStatus('dataStatus', body ? 'Published text must be 500 words or fewer.' : 'Enter publication text first.');
+    return;
+  }
+  const publication = { kind: $('kind').value, body, at: new Date().toISOString() };
+  if (publication.kind === 'MicroProspective') {
+    publication.condition = $('condition').value.trim();
+    publication.outcome = $('outcome').value.trim();
+    publication.deadline = $('deadline').value;
+    publication.resolution = $('resolution').value.trim();
+    if (!publication.condition || !publication.outcome || !publication.deadline || !publication.resolution) {
+      setStatus('dataStatus', 'A MicroProspective requires IF, THEN, BY, and a resolution source.');
+      return;
+    }
+  }
+  state.publications.push(publication);
+  saveWorkspace();
+  renderPublications();
+  $('pubBody').value = '';
+  setStatus('dataStatus', 'Publication saved in this browser.');
+  updateCounts();
+}
+
+function renderPublications() {
+  $('publicationResult').innerHTML = state.publications.map(publication =>
+    `<div class="source"><b>${escapeHTML(publication.kind)}</b> <span class="small">${escapeHTML(publication.at || '')}</span>
+    <p class="source-notes">${escapeHTML(publication.body)}</p>
+    ${publication.kind === 'MicroProspective' ? `<div class="small">IF ${escapeHTML(publication.condition)} → THEN ${escapeHTML(publication.outcome)} → BY ${escapeHTML(publication.deadline)}<br>Resolution: ${escapeHTML(publication.resolution)}</div>` : ''}</div>`
+  ).join('');
+}
+
+function exportWorkspace() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'raws-workspace.json';
+  link.click();
+  URL.revokeObjectURL(url);
+  setStatus('dataStatus', 'Workspace backup downloaded.');
+}
+
+async function importWorkspace(file, statusId) {
+  if (!file) return;
+  try {
+    const imported = JSON.parse(await file.text());
+    if (!validateWorkspace(imported)) throw new Error('Invalid workspace');
+    state = normalizeWorkspace(imported);
+    saveWorkspace();
+    renderWorkspace();
+    setStatus('dataStatus', 'Workspace imported and saved in this browser.');
+  } catch (error) {
+    setStatus(statusId, 'Could not import that file. Choose a valid RAWS workspace JSON backup.');
+  }
+}
+
+function deleteWorkspace() {
+  if (!window.confirm('Delete the saved RAWS workspace from this browser? Export a backup first if you may need this data.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = null;
+  location.reload();
+}
+
+function closeWorkspace() {
+  saveWorkspace();
+  state = null;
+  $('workspace').classList.add('hidden');
+  $('start').classList.remove('hidden');
+  setStatus('startStatus', 'Workspace saved in this browser and closed.');
+}
+
+$('createButton').addEventListener('click', createWorkspace);
+$('loadButton').addEventListener('click', loadWorkspace);
+$('addSourceButton').addEventListener('click', addSource);
+$('lockButton').addEventListener('click', lockAssessment);
+$('analyzeButton').addEventListener('click', () => {
+  renderAnalysis();
+  $('analysisCard').classList.remove('hidden');
+});
+$('retainButton').addEventListener('click', retainAssessment);
+$('reviseButton').addEventListener('click', showRevision);
+$('saveRevisionButton').addEventListener('click', saveRevision);
+$('kind').addEventListener('change', toggleProspective);
+$('publishButton').addEventListener('click', savePublication);
+$('exportButton').addEventListener('click', exportWorkspace);
+$('resetButton').addEventListener('click', deleteWorkspace);
+$('closeButton').addEventListener('click', closeWorkspace);
+$('assessment').addEventListener('input', () => {
+  updateCounts();
+  if (state && !state.locked) {
+    state.assessment = $('assessment').value;
+    saveWorkspace();
+  }
+});
+$('revisionText').addEventListener('input', updateCounts);
+$('pubBody').addEventListener('input', updateCounts);
+$('topic').addEventListener('input', () => {
+  if (state) {
+    state.topic = $('topic').value;
+    saveWorkspace();
+  }
+});
+$('importFile').addEventListener('change', event => importWorkspace(event.target.files[0], 'startStatus'));
+$('workspaceImport').addEventListener('change', event => importWorkspace(event.target.files[0], 'dataStatus'));
+renderProfiles();
+toggleProspective();
+</script>
+</body>
+</html>
